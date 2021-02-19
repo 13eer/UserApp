@@ -50,6 +50,8 @@ public class UserService implements UserServiceInterface {
     public void addUser(String name, int age) {
 
         try {
+            boolean marker = false;
+
             User user = new User(name, age);
 
             if (file.length() != 0) {
@@ -60,14 +62,23 @@ public class UserService implements UserServiceInterface {
                 objectInputStream.close();
                 fileInputStream.close();
             }
-            userList.add(user);
+            for (User u : userList
+            ) {
+                if (u.getName().equals(name)) {
+                    marker = true;
+                    System.out.println("username already exists");
+                }
+            }
+            if (!marker) {
+                userList.add(user);
+                System.out.println("user " + name + " added");
+            }
             FileOutputStream fileOutputStream = new FileOutputStream(file);
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
             objectOutputStream.writeObject(userList);
             objectOutputStream.close();
             fileOutputStream.close();
 
-            System.out.println("user " + name + " added");
         } catch (IOException | ClassNotFoundException e) {
             System.out.println("exception in addUser");
             e.printStackTrace();
@@ -92,6 +103,7 @@ public class UserService implements UserServiceInterface {
                         userList.remove(user);
                         marker = true;
                         System.out.println("user " + name + " deleted");
+                        break;
                     }
                 }
                 FileOutputStream fileOutputStream = new FileOutputStream(file);
